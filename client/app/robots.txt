@@ -1,0 +1,5 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+Sitemap: https://www.nssec.gov.ng/sitemap.xml  # Update with your actual domain
