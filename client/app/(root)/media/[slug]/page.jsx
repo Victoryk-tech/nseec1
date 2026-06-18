@@ -1,93 +1,25 @@
-// app/posts/[slug]/page.jsx
-import PostsPage from "../../../components/PostsPage";
-import { sanityClient } from "../../../lib/sanityClient"; // Ensure this is properly set up
+import { sanityClient } from "@/app/lib/sanityClient";
 import { groq } from "next-sanity";
+import { redirect, notFound } from "next/navigation";
 
-const postQuery = groq`
-  *[_type == "mediaPost" && slug.current == $slug][0] {
-      _id,
-          title,
-          slug,
-          description,
-          content,
-          image{
-            asset->{_id, url}
-          },
-          mainCategory,
-          subCategory,
-          comments,
-          views,
-          publishedAt,
-          _createdAt
-  }
-`;
+const postQuery = groq`*[_type == "mediaPost" && slug.current == $slug][0]{ mainCategory, "slug": slug.current }`;
 
-const allSlugsQuery = groq`
-  *[_type == "mediaPost" && defined(slug.current)]{
-    "slug": slug.current
-  }
-`;
+const CATEGORY_MAP = {
+  "nssec-news": "nssec-news",
+  "news-headlines": "nssec-news",
+  "photo-gallery": "photo-gallery",
+  gallery: "photo-gallery",
+  "press-release": "press-release",
+};
 
-
-export async function generateStaticParams() {
-  try {
-    const data = await sanityClient.fetch(allSlugsQuery);
-
-    return data.map((post) => ({
-      slug: post.slug, // already a plain string
-    }));
-  } catch (error) {
-    console.error("Error generating static params:", error);
-    return [];
-  }
-}
-
-
-export async function generateMetadata({ params }) {
-  const { slug } = params;
-  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
+export default async function LegacyMediaRoute({ params }) {
+  const { slug } = await params;
   try {
     const post = await sanityClient.fetch(postQuery, { slug });
-
-    if (!post) throw new Error("Post not found");
-
-    const imageUrl = post.image ? post.image.asset?.url : null;
-
-    return {
-      title: `${post.title} | My Blog`,
-      description: post.description || "Read this insightful blog post.",
-      openGraph: {
-        title: post.title,
-        description: post.description || "Read this insightful blog post.",
-        url: `${siteUrl}/media/${slug}`,
-        type: "article",
-        images: [
-          {
-            url: imageUrl || `${siteUrl}/default-image.png`,
-            width: 800,
-            height: 600,
-            alt: post.title,
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: post.title,
-        description: post.description || "Read this insightful blog post.",
-        images: [imageUrl || `${siteUrl}/default-image.png`],
-      },
-    };
-  } catch (err) {
-    console.error("Metadata fetch error:", err);
-    return {
-      title: "Post not found",
-      description: "This post could not be found.",
-    };
+    if (!post) notFound();
+    const newCategory = CATEGORY_MAP[post.mainCategory] || "nssec-news";
+    redirect(`/media/${newCategory}/${post.slug}`);
+  } catch {
+    notFound();
   }
 }
-export default async function Page({ params }) {
-  const { slug } = await params; 
-  return <PostsPage slug={slug} />;
-}
-

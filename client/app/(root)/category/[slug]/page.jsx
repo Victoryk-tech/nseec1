@@ -1,5 +1,5 @@
 // app/media/category/[slug]/page.jsx
-import MediaPost from "../../../components/MediaPost";
+import MediaPost from "@/components/MediaPost";
 
 
 export async function generateMetadata({ params }) {

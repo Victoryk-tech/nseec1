@@ -13,3 +13,13 @@ const builder = imageUrlBuilder(client);
 export function urlFor(source) {
   return builder.image(source);
 }
+
+export function getImageUrl(item, fallback = "/nssec.jpeg") {
+  if (!item) return fallback;
+  if (item.cloudinaryUrl) return item.cloudinaryUrl;
+  if (item.image?.asset?.url) return item.image.asset.url;
+  if (item.image) {
+    try { return urlFor(item.image).url(); } catch { return fallback; }
+  }
+  return fallback;
+}

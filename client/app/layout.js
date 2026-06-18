@@ -1,11 +1,12 @@
 import localFont from "next/font/local";
+import { Playfair_Display } from "next/font/google";
 import Script from 'next/script';
 import "./globals.css";
-import Navbar from "./components/Navbar";
-import { BlogProvider } from "./components/contexts/BlogContext";
-import { FormProvider } from "./components/contexts/FormContext";
+import Navbar from "../components/Navbar";
+import { BlogProvider } from "../components/contexts/BlogContext";
+import { FormProvider } from "../components/contexts/FormContext";
 import { organizationSchema, websiteSchema } from './utils/structuredData';
-import CanonicalURL from './components/CanonicalURL';
+import CanonicalURL from '../components/CanonicalURL';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,6 +17,12 @@ const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
+});
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 export const metadata = {
@@ -28,31 +35,18 @@ export const metadata = {
   authors: [{ name: "National Senior Secondary Education Commission" }],
   creator: "NSSEC",
   publisher: "National Senior Secondary Education Commission",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: true,
-  },
-  metadataBase: new URL('https://nssec.gov.ng'), // Update with your actual domain
+  formatDetection: { email: false, address: false, telephone: true },
+  metadataBase: new URL('https://nssec.gov.ng'),
   alternates: {
     canonical: '/',
-    languages: {
-      'en-US': '/en-US',
-    },
+    languages: { 'en-US': '/en-US' },
   },
   openGraph: {
     title: "NSSEC - National Senior Secondary Education Commission",
     description: "Regulatory body overseeing and standardizing senior secondary education in Nigeria",
-    url: 'https://nssec.gov.ng', 
+    url: 'https://nssec.gov.ng',
     siteName: 'NSSEC',
-    images: [
-      {
-        url: '/nssec.jpeg', 
-        width: 1200,
-        height: 630,
-        alt: 'NSSEC - National Senior Secondary Education Commission',
-      },
-    ],
+    images: [{ url: '/nssec.jpeg', width: 1200, height: 630, alt: 'NSSEC - National Senior Secondary Education Commission' }],
     locale: 'en_US',
     type: 'website',
   },
@@ -60,9 +54,9 @@ export const metadata = {
     card: "summary_large_image",
     title: "NSSEC - National Senior Secondary Education Commission",
     description: "Regulatory body overseeing senior secondary education in Nigeria",
-    images: ["/nssec.jpeg"], 
-    creator: "@NSSEC_Nigeria", 
-    site: "@NSSEC_Nigeria", 
+    images: ["/nssec.jpeg"],
+    creator: "@NSSEC_Nigeria",
+    site: "@NSSEC_Nigeria",
   },
   robots: {
     index: true,
@@ -97,7 +91,7 @@ export default function RootLayout({ children }) {
         <CanonicalURL />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans scroll-smooth bg-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} font-sans scroll-smooth bg-white`}
         itemScope
         itemType="https://schema.org/WebPage"
       >
@@ -112,14 +106,12 @@ export default function RootLayout({ children }) {
           }}
         />
         <main className="flex-1">
-         
-               <BlogProvider>
-                  <FormProvider>
-                  <Navbar />
-                    {children}
-                  </FormProvider>
-                </BlogProvider>
-         
+          <BlogProvider>
+            <FormProvider>
+              <Navbar />
+              {children}
+            </FormProvider>
+          </BlogProvider>
         </main>
       </body>
     </html>

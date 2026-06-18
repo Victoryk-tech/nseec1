@@ -1,8 +1,8 @@
 "use client";
 
 import { Home, Search, FileQuestion, ArrowLeft, Mail, Phone, MapPin } from 'lucide-react';
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 

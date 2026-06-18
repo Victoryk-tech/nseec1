@@ -1,5 +1,5 @@
 // app/(root)/about/layout.tsx or layout.jsx
-import {DemographicsSection} from "../../components/EducationSection";
+import {DemographicsSection} from "@/components/EducationSection";
 export const metadata = {
   title: "Demographics",
   description: "demographics.",

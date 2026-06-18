@@ -12,7 +12,7 @@ const client = createClient({
 
 export async function POST(req) {
   try {
-    const { email } = await req.json();
+    const { name, email } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
@@ -21,6 +21,7 @@ export async function POST(req) {
     // 1. Save subscriber in Sanity
     await client.create({
       _type: "subscribers",
+      name: name || "",
       email,
     });
 
@@ -39,10 +40,10 @@ export async function POST(req) {
       to: email,
       subject: "Welcome to NSSEC 🎉",
       html: `
-        <h2>Welcome to NSSEC!</h2>
-        <p>The NSSEC remains committed to enhancing the quality of senior secondary education nationwide.</p>
-        <p>In the last three years, we focused on curriculum development, teacher training, infrastructure improvement, and policy implementation to ensure our education system remains competitive and inclusive.</p>
-        <p>Thank you for subscribing!</p>
+        <h2>Welcome${name ? `, ${name}` : ""}!</h2>
+        <p>Thank you for subscribing to the NSSEC newsletter.</p>
+        <p>The NSSEC remains committed to enhancing the quality of senior secondary education nationwide. You'll receive updates on our programmes, policy developments, and educational initiatives.</p>
+        <p>Visit us at <a href="https://nssec.gov.ng">nssec.gov.ng</a></p>
       `,
     });
 
@@ -51,7 +52,7 @@ export async function POST(req) {
       from: `"NSSEC" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_USER, // admin email
       subject: "New Subscriber 🚀",
-      text: `A new user subscribed with email: ${email}`,
+      text: `New subscriber:\nName: ${name || "Not provided"}\nEmail: ${email}`,
     });
 
     return NextResponse.json({ success: true, message: "Subscribed successfully" });

@@ -1,20 +1,25 @@
-import {ProgramsPage} from "../../components/ProgramsPage";
-import { generateSEO } from "../../components/SEO";
+import ProgramsOverview from "@/components/programs/ProgramsOverview";
 
-export const metadata = generateSEO({
-  title: "NSSEC Programs - National Senior Secondary Education Commission",
-  description: "Explore the comprehensive programs and initiatives by the National Senior Secondary Education Commission (NSSEC). Discover our educational programs, training initiatives, and development schemes for senior secondary education in Nigeria.",
-  keywords: ["NSSEC Programs", "Education Programs Nigeria", "Secondary Education Initiatives", "NSSEC Training", "Educational Development", "School Programs", "NSSEC Initiatives"],
-  pathname: "/programs",
-  image: "/nssec.jpeg",
-});
+export const metadata = {
+  title: "Programs | NSSEC",
+  description:
+    "Explore NSSEC's comprehensive programs and initiatives — Safe School Initiative, TVET, Monitoring Learning Achievement, School Management Committees, Reskilling Teachers, Robotics & AI, and Advocacy Visits.",
+  keywords: ["NSSEC Programs", "Education Programs Nigeria", "NSSEC Initiatives", "Senior Secondary School Programs Nigeria"],
+  alternates: { canonical: "https://nssec.gov.ng/programs" },
+  openGraph: {
+    title: "Programs | NSSEC",
+    description: "Comprehensive initiatives designed to transform senior secondary education in Nigeria.",
+    url: "https://nssec.gov.ng/programs",
+    type: "website",
+    images: [{ url: "/nssec.jpeg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Programs | NSSEC",
+    images: ["/nssec.jpeg"],
+  },
+};
 
-export default function Programs () {
-  return (
-    <div className="">
-      <ProgramsPage/>
-    </div>
-     
-  
-  );
+export default function ProgramsRoute() {
+  return <ProgramsOverview />;
 }

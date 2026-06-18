@@ -1,5 +1,5 @@
-import {ProjectPage} from "../../components/ProgramsPage";
-import { generateSEO } from "../../components/SEO";
+import {ProjectPage} from "@/components/ProgramsPage";
+import { generateSEO } from "@/components/SEO";
 
 export const metadata = generateSEO({
   title: "Constituency Projects - National Senior Secondary Education Commission",
