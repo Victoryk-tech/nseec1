@@ -5,9 +5,9 @@ import nodemailer from "nodemailer";
 const client = createClient({
   projectId: process.env.SANITY_PROJECT_ID,
   dataset: process.env.SANITY_DATASET,
-  apiVersion:"2023-09-23",
+  apiVersion: "2023-09-23",
   token: process.env.SANITY_API_TOKEN,
-  useCdn: true,
+  useCdn: false,
 });
 
 export async function POST(req) {
@@ -55,9 +55,15 @@ export async function POST(req) {
       text: `New subscriber:\nName: ${name || "Not provided"}\nEmail: ${email}`,
     });
 
-    return NextResponse.json({ success: true, message: "Subscribed successfully" });
+    return NextResponse.json({
+      success: true,
+      message: "Subscribed successfully",
+    });
   } catch (error) {
     console.error("Subscribe error:", error);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 },
+    );
   }
 }
