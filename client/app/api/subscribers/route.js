@@ -7,7 +7,7 @@ const client = createClient({
   dataset: process.env.SANITY_DATASET,
   apiVersion:"2023-09-23",
   token: process.env.SANITY_API_TOKEN,
-  useCdn: false,
+  useCdn: true,
 });
 
 export async function POST(req) {
