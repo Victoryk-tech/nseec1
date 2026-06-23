@@ -3,10 +3,6 @@ import { body, param } from "express-validator";
 export const createUserValidator = [
   body("name").trim().isLength({ min: 2 }).withMessage("Name must be at least 2 characters"),
   body("email").isEmail().normalizeEmail().withMessage("Valid email required"),
-  body("password")
-    .isLength({ min: 8 }).withMessage("Password must be at least 8 characters")
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage("Password must contain uppercase, lowercase, and a number"),
   body("role")
     .isIn(["superAdmin", "admin", "editor", "viewer"])
     .withMessage("Invalid role"),

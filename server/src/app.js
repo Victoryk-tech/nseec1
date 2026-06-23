@@ -17,6 +17,8 @@ import auditRoutes from "./routes/audit.js";
 import dashboardRoutes from "./routes/dashboard.js";
 import notificationRoutes from "./routes/notifications.js";
 import publicationRoutes from "./routes/publications.js";
+import galleryRoutes from "./routes/gallery.js";
+import mandERoutes from "./routes/mandE.js";
 
 const app = express();
 
@@ -54,6 +56,8 @@ app.use("/api/v1/audit", auditRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/publications", publicationRoutes);
+app.use("/api/v1/gallery", galleryRoutes);
+app.use("/api/v1/mande", mandERoutes);
 
 // 404
 app.use((_req, res) => res.status(404).json({ success: false, message: "Route not found" }));
