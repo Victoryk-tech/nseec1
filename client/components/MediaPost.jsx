@@ -5,11 +5,34 @@ import Link from "next/link";
 import Footer from "./Footer";
 import { urlFor } from "@/app/lib/imageUrl";
 import { FaRegCalendarAlt, FaRegClock, FaEye, FaImages } from "react-icons/fa";
-import { useBlogContext } from "./contexts/BlogContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useNewsStore } from "@/store/newsStore";
+import { usePressReleaseStore } from "@/store/pressReleaseStore";
+
+function formatTime(timestamp) {
+  if (!timestamp) return "";
+  const now = new Date();
+  const postDate = new Date(timestamp);
+  const seconds = Math.floor((now - postDate) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  if (seconds < 60) return `${seconds}s ago`;
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 30) return `${days} days ago`;
+  return postDate.toLocaleDateString("en-NG", { year: "numeric", month: "short", day: "numeric" });
+}
+
 const MediaPost = ({ slug }) => {
-  const { blogs, loading, updatedPost, formatTime } = useBlogContext();
+  const { posts: newsPosts, isLoading: newsLoading, fetchPosts: fetchNews } = useNewsStore();
+  const { posts: pressPosts, isLoading: pressLoading, fetchPosts: fetchPress } = usePressReleaseStore();
+
+  useEffect(() => { fetchNews(); fetchPress(); }, []);
+
+  const blogs = useMemo(() => [...newsPosts, ...pressPosts], [newsPosts, pressPosts]);
+  const loading = newsLoading || pressLoading;
 
   const categorySlug = typeof slug === "string" ? slug.toLowerCase() : "";
 

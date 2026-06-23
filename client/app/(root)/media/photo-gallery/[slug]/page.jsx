@@ -1,29 +1,28 @@
 import GalleryDetailPage from "@/components/media/GalleryDetailPage";
-import { sanityClient } from "@/app/lib/sanityClient";
-import { groq } from "next-sanity";
 import { photoGallerySchema } from "@/app/utils/structuredData";
 
 const BASE = "https://nssec.gov.ng";
-const allSlugsQuery = groq`*[_type == "mediaPost" && mainCategory == "photo-gallery" && defined(slug.current)]{ "slug": slug.current }`;
-const albumQuery = groq`*[_type == "mediaPost" && mainCategory == "photo-gallery" && slug.current == $slug][0]{
-  title, description, publishedAt, _createdAt,
-  "imageUrl": coalesce(cloudinaryUrl, image.asset->url),
-  "galleryImages": galleryImages[]{ "imageUrl": coalesce(cloudinaryUrl, image.asset->url) }
-}`;
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
 export async function generateStaticParams() {
   try {
-    const data = await sanityClient.fetch(allSlugsQuery);
-    return data.map((d) => ({ slug: d.slug }));
-  } catch { return []; }
+    const res = await fetch(`${API}/gallery/slugs`);
+    const data = await res.json();
+    return (data.data?.slugs || []).map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const album = await sanityClient.fetch(albumQuery, { slug });
+    const res = await fetch(`${API}/gallery/${slug}`);
+    const data = await res.json();
+    const album = data.data?.album;
     if (!album) throw new Error();
-    const photoCount = album.galleryImages?.length || 0;
+    const photoCount = album.images?.length || 0;
+    const coverUrl = album.thumbnailUrl || album.images?.[0]?.imageUrl || `${BASE}/nssec.jpeg`;
     return {
       title: `${album.title} | Photo Gallery | NSSEC`,
       description: album.description || `View ${photoCount} photos from ${album.title}`,
@@ -33,12 +32,12 @@ export async function generateMetadata({ params }) {
         description: album.description || `${photoCount} photos`,
         url: `${BASE}/media/photo-gallery/${slug}`,
         type: "website",
-        images: [{ url: album.imageUrl || album.galleryImages?.[0]?.imageUrl || `${BASE}/nssec.jpeg`, width: 1200, height: 630 }],
+        images: [{ url: coverUrl, width: 1200, height: 630 }],
       },
       twitter: {
         card: "summary_large_image",
         title: album.title,
-        images: [album.imageUrl || `${BASE}/nssec.jpeg`],
+        images: [coverUrl],
       },
     };
   } catch {
@@ -50,15 +49,17 @@ export default async function GalleryAlbumRoute({ params }) {
   const { slug } = await params;
   let jsonLd = null;
   try {
-    const album = await sanityClient.fetch(albumQuery, { slug });
+    const res = await fetch(`${API}/gallery/${slug}`);
+    const data = await res.json();
+    const album = data.data?.album;
     if (album) {
       jsonLd = photoGallerySchema({
         title: album.title,
         description: album.description,
-        imageUrl: album.imageUrl || album.galleryImages?.[0]?.imageUrl,
-        publishedAt: album.publishedAt || album._createdAt,
+        imageUrl: album.thumbnailUrl || album.images?.[0]?.imageUrl,
+        publishedAt: album.publishedAt || album.createdAt,
         slug,
-        photoCount: album.galleryImages?.length,
+        photoCount: album.images?.length,
       });
     }
   } catch {}

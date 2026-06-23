@@ -1,11 +1,11 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, Eye, ArrowRight, Newspaper } from "lucide-react";
 import { motion } from "framer-motion";
 import { urlFor } from "@/app/lib/imageUrl";
-import { useBlogContext } from "../contexts/BlogContext";
+import { useNewsStore } from "@/store/newsStore";
 
 const CATEGORY_LABELS = {
   "nssec-news": "NSSEC News",
@@ -146,18 +146,29 @@ function NewsCard({ item, index }) {
   );
 }
 
+function formatTime(timestamp) {
+  if (!timestamp) return "";
+  const now = new Date();
+  const postDate = new Date(timestamp);
+  const seconds = Math.floor((now - postDate) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  if (seconds < 60) return `${seconds}s ago`;
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 30) return `${days} days ago`;
+  return postDate.toLocaleDateString("en-NG", { year: "numeric", month: "short", day: "numeric" });
+}
+
 export default function News() {
-  const { blogs, loading, error, formatTime } = useBlogContext();
+  const { posts, isLoading: loading, fetchPosts } = useNewsStore();
+
+  useEffect(() => { fetchPosts(); }, []);
 
   const recentNews = useMemo(() => {
-    if (!blogs || blogs.length === 0) return [];
-    return blogs
-      .filter((b) => b.mainCategory !== "gallery" && b.mainCategory !== "photo-gallery")
-      .sort(
-        (a, b) =>
-          new Date(b.publishedAt || b._createdAt) -
-          new Date(a.publishedAt || a._createdAt)
-      )
+    if (!posts || posts.length === 0) return [];
+    return posts
       .slice(0, 6)
       .map((b) => ({
         id: b._id,
@@ -171,31 +182,12 @@ export default function News() {
         date: b.publishedAt || b._createdAt,
         formattedDate: formatTime(b.publishedAt || b._createdAt),
       }));
-  }, [blogs, formatTime]);
+  }, [posts]);
 
-  if (loading) return <Skeleton />;
-
-  if (error) {
-    return (
-      <section className="py-16 bg-white">
-        <div className="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-10 2xl:px-16 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-50 rounded-full mb-4">
-            <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Unable to Load News</h3>
-          <p className="text-gray-500 mb-5 text-sm">We&apos;re having trouble fetching the latest updates.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="inline-flex items-center px-5 py-2.5 bg-[#24c2c2] text-white text-sm font-semibold rounded-xl hover:bg-[#1da8a8] transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </section>
-    );
-  }
+  
+  if (loading || !blogs || blogs.length === 0) {
+  return null;
+}
 
   if (recentNews.length === 0) {
     return (

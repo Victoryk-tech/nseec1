@@ -27,26 +27,37 @@ export default function NewsCard({ post, category = "nssec-news", size = "defaul
   const {
     title,
     description,
+    excerpt,
     slug,
     imageUrl,
     image,
     mainCategory,
     subCategory,
+    categories,
     views = 0,
     publishedAt,
     _createdAt,
     content,
+    body,
+    readingTime,
     author,
   } = post;
 
+  // nssecnews uses excerpt; mediaPost uses description
+  const blurb = description || excerpt;
+  // nssecnews uses categories[]; mediaPost uses subCategory
+  const categorySlug = subCategory || categories?.[0]?.slug;
+  const categoryLabel = subCategory || categories?.[0]?.title;
+  // nssecnews has readingTime field; mediaPost calculates from content
+  const readTime = readingTime || calcReadTime(content || body);
+
   const href = `/media/${mainCategory || category}/${slug?.current || slug}`;
   const imgSrc = imageUrl || image?.asset?.url || "/nssec.jpeg";
-  const readTime = calcReadTime(content);
   const date = publishedAt || _createdAt;
   const formattedDate = date
     ? new Date(date).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })
     : "";
-  const subColor = subcategoryColors[subCategory] || subcategoryColors.uncategorized;
+  const subColor = subcategoryColors[categorySlug] || subcategoryColors.uncategorized;
   const isLarge = size === "large";
 
   return (
@@ -65,9 +76,9 @@ export default function NewsCard({ post, category = "nssec-news", size = "defaul
             <span className="px-2.5 py-0.5 bg-[#24c2c2] text-white text-xs font-semibold rounded-full uppercase tracking-wide">
               NSSEC News
             </span>
-            {subCategory && subCategory !== "uncategorized" && (
+            {categorySlug && categorySlug !== "uncategorized" && (
               <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full capitalize ${subColor}`}>
-                {subCategory}
+                {categoryLabel || categorySlug}
               </span>
             )}
           </div>
@@ -81,9 +92,9 @@ export default function NewsCard({ post, category = "nssec-news", size = "defaul
           >
             {title}
           </h3>
-          {description && (
+          {blurb && (
             <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 flex-1">
-              {description}
+              {blurb}
             </p>
           )}
 

@@ -21,5 +21,5 @@ export const metadata = {
 };
 
 export default function NSSECNewsRoute() {
-  return <NSSECNewsPage />;
+  return <NSSECNewsPage/>;
 }

@@ -42,7 +42,7 @@ const Team = () => {
     {
       name: "Head, Legal Unit",
       head: "Barr. (Mrs) Maryam sidi Ali",
-      image: "/nssec.jpeg",
+      image: "/about/Maryam-Sidi-Ali.jpeg",
       description:
         "Legal advisory services and regulatory compliance management.",
       email: "maryam@nssec.gov.ng",
@@ -116,7 +116,7 @@ const Team = () => {
     {
       name: "Head, Finance and Account Department",
       head: "Salihu Bukar Malgwi ",
-      image: "/nssec.jpeg",
+      image: "/about/salihu-bukar.jpeg",
       description:
         "Internal auditing and financial oversight for transparency.",
       email: "mairiga@nssec.gov.ng",

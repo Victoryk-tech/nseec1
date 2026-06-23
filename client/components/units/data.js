@@ -57,7 +57,7 @@ export const UNITS = [
     head: "Barr. (Mrs) Maryam Sidi Ali",
     headTitle: "Head, Legal Unit",
     email: "legal@nssec.gov.ng",
-    photo: null,
+    photo: "/about/Maryam-Sidi-Ali.jpeg",
     tagline:
       "Providing Expert Legal Counsel and Ensuring Full Regulatory Compliance",
     description:
@@ -249,10 +249,10 @@ export const UNITS = [
     name: "Information & Communication Technology Unit",
     short: "ICT Unit",
     path: "/unit/ict",
-    head: null,
+    head: "Onyeke Ochu Linda (Ph.D)",
     headTitle: "Head, ICT Unit",
     email: "ict_unit@nssec.gov.ng",
-    photo: null,
+    photo: "/about/ochu.jpg", 
     tagline:
       "Powering NSSEC's Digital Transformation and Educational Technology",
     description:

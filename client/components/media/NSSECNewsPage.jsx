@@ -1,11 +1,10 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Newspaper, ChevronRight, Search } from "lucide-react";
-import { useBlogContext } from "@/components/contexts/BlogContext";
+import { useNssecNewsStore } from "@/store/nssecNewsStore";
 import NewsCard from "./NewsCard";
 
-const SUBCATEGORIES = ["all", "conference", "events", "announcement", "education", "policy"];
 const POSTS_PER_PAGE = 9;
 
 function SkeletonCard() {
@@ -22,36 +21,46 @@ function SkeletonCard() {
 }
 
 export default function NSSECNewsPage() {
-  const { blogs, loading } = useBlogContext();
+  const { posts: newsPosts, isLoading: loading, fetchPosts } = useNssecNewsStore();
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const newsPosts = useMemo(
-    () => blogs.filter((b) => b.mainCategory === "nssec-news"),
-    [blogs]
-  );
+  useEffect(() => { fetchPosts(); }, []);
+
+  // Build tabs from whichever categories actually exist in the fetched posts
+  const tabs = useMemo(() => {
+    const seen = new Set();
+    const cats = [];
+    for (const post of newsPosts) {
+      for (const cat of post.categories || []) {
+        if (cat?.slug && !seen.has(cat.slug)) {
+          seen.add(cat.slug);
+          cats.push({ slug: cat.slug, title: cat.title });
+        }
+      }
+    }
+    return [{ slug: "all", title: "All News" }, ...cats];
+  }, [newsPosts]);
 
   const filtered = useMemo(() => {
     let result = newsPosts;
-    if (activeTab !== "all") result = result.filter((p) => p.subCategory === activeTab);
+    if (activeTab !== "all") {
+      result = result.filter((p) =>
+        p.categories?.some((c) => c.slug === activeTab)
+      );
+    }
     if (search.trim()) {
       const s = search.toLowerCase();
       result = result.filter(
-        (p) => p.title?.toLowerCase().includes(s) || p.description?.toLowerCase().includes(s)
+        (p) => p.title?.toLowerCase().includes(s) || p.excerpt?.toLowerCase().includes(s)
       );
     }
     return result;
   }, [newsPosts, activeTab, search]);
 
-  const featured = useMemo(
-    () => filtered.find((p) => p.featured) || filtered[0],
-    [filtered]
-  );
-  const rest = useMemo(
-    () => filtered.filter((p) => p._id !== featured?._id),
-    [filtered, featured]
-  );
+  const featured = useMemo(() => filtered.find((p) => p.featuredNews) || filtered[0], [filtered]);
+  const rest = useMemo(() => filtered.filter((p) => p._id !== featured?._id), [filtered, featured]);
 
   const totalPages = Math.ceil(rest.length / POSTS_PER_PAGE);
   const paginated = rest.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
@@ -86,22 +95,24 @@ export default function NSSECNewsPage() {
           </div>
         </div>
 
-        {/* Sub-category tabs */}
-        <div className="flex flex-wrap gap-2 mt-5">
-          {SUBCATEGORIES.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => { setActiveTab(tab); setPage(1); }}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium capitalize transition-all border ${
-                activeTab === tab
-                  ? "bg-[#24c2c2] text-white border-[#24c2c2]"
-                  : "border-gray-200 text-gray-600 hover:border-[#24c2c2] hover:text-[#24c2c2]"
-              }`}
-            >
-              {tab === "all" ? "All News" : tab}
-            </button>
-          ))}
-        </div>
+        {/* Category tabs — driven by actual Sanity newsCategory data */}
+        {tabs.length > 1 && (
+          <div className="flex flex-wrap gap-2 mt-5">
+            {tabs.map((tab) => (
+              <button
+                key={tab.slug}
+                onClick={() => { setActiveTab(tab.slug); setPage(1); }}
+                className={`px-4 py-1.5 rounded-full text-xs font-medium capitalize transition-all border ${
+                  activeTab === tab.slug
+                    ? "bg-[#24c2c2] text-white border-[#24c2c2]"
+                    : "border-gray-200 text-gray-600 hover:border-[#24c2c2] hover:text-[#24c2c2]"
+                }`}
+              >
+                {tab.title}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {loading ? (

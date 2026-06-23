@@ -7,19 +7,19 @@ import {
   Send, User, MessageSquare,
   CheckCircle, AlertCircle, Loader2, Building2, ArrowRight,
 } from "lucide-react";
-import { useFormContext } from "@/components/contexts/FormContext";
+import { useContactFormStore } from "@/store/contactStore";
 
 /* ─────────────────── helpers ─────────────────── */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const fieldClasses = (error, padLeft = true) =>
+const fieldClasses = (hasError, padLeft = true) =>
   [
     "block w-full",
     padLeft ? "pl-10" : "pl-4",
     "pr-4 py-3.5 rounded-xl border text-sm transition-all duration-200",
     "focus:outline-none focus:ring-2",
-    error
+    hasError
       ? "border-red-400 focus:ring-red-200 bg-red-50/40 placeholder-red-300"
       : "border-gray-200 focus:ring-[#24c2c2]/25 focus:border-[#24c2c2] bg-white placeholder-gray-400",
   ].join(" ");
@@ -52,26 +52,17 @@ const FieldWrapper = ({ label, error, icon: Icon, children }) => {
 
   useEffect(() => {
     if (error) {
-      controls.start({
-        x: [0, -8, 8, -8, 8, -4, 0],
-        transition: { duration: 0.42 },
-      });
+      controls.start({ x: [0, -8, 8, -8, 8, -4, 0], transition: { duration: 0.42 } });
     }
   }, [error, controls]);
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1.5">
-        {label}
-      </label>
+      <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
       <motion.div animate={controls} className="relative">
         {Icon && (
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-            <Icon
-              className={`h-5 w-5 transition-colors duration-200 ${
-                error ? "text-red-400" : "text-gray-400"
-              }`}
-            />
+            <Icon className={`h-5 w-5 transition-colors duration-200 ${error ? "text-red-400" : "text-gray-400"}`} />
           </div>
         )}
         {children}
@@ -99,23 +90,22 @@ const FieldWrapper = ({ label, error, icon: Icon, children }) => {
 
 const ContactForm = ({ onSwitchToDepts }) => {
   const {
-    name, setName,
-    email, setEmail,
-    subject, setSubject,
-    userMessage, setUserMessage,
-    handleContact,
-    loading, success, isMessage,
-    nameError, emailError, messageError, subjectError,
-  } = useFormContext();
+    name, email, subject, message,
+    errors, status, statusMessage,
+    setField, submit, reset,
+  } = useContactFormStore();
 
   const isFormValid = useMemo(
     () =>
       name.trim().length >= 2 &&
       EMAIL_RE.test(email.trim()) &&
       subject.trim().length >= 3 &&
-      userMessage.trim().length >= 10,
-    [name, email, subject, userMessage]
+      message.trim().length >= 10,
+    [name, email, subject, message]
   );
+
+  const isLoading = status === "loading";
+  const isSuccess = status === "success";
 
   return (
     <section className="bg-gray-50/40 py-16">
@@ -131,19 +121,14 @@ const ContactForm = ({ onSwitchToDepts }) => {
               transition={{ duration: 0.45 }}
               className="mb-1"
             >
-              <h2 className="text-xl font-bold text-gray-900 mb-1.5">
-                Get In Touch
-              </h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-1.5">Get In Touch</h2>
               <p className="text-gray-500 text-sm leading-relaxed">
-                Fill out the form and our team will get back to you within
-                one business day.
+                Fill out the form and our team will get back to you within one business day.
               </p>
             </motion.div>
 
             <InfoCard icon={MapPin} title="Office Address" delay={0.08}>
-              <p className="text-gray-500 text-xs leading-relaxed">
-                Plot 14 Yobe Close, Maitama, Abuja
-              </p>
+              <p className="text-gray-500 text-xs leading-relaxed">Plot 14 Yobe Close, Maitama, Abuja</p>
             </InfoCard>
             <InfoCard icon={Phone} title="Call Us" delay={0.14}>
               <p className="text-gray-500 text-xs">09155555268</p>
@@ -154,12 +139,9 @@ const ContactForm = ({ onSwitchToDepts }) => {
             </InfoCard>
             <InfoCard icon={Clock} title="Office Hours" delay={0.26}>
               <p className="text-gray-500 text-xs">Monday – Friday</p>
-              <p className="text-gray-700 text-xs font-semibold">
-                9:00 AM – 4:00 PM
-              </p>
+              <p className="text-gray-700 text-xs font-semibold">9:00 AM – 4:00 PM</p>
             </InfoCard>
 
-            {/* Dept nudge */}
             <motion.button
               onClick={onSwitchToDepts}
               initial={{ opacity: 0, y: 10 }}
@@ -173,12 +155,8 @@ const ContactForm = ({ onSwitchToDepts }) => {
                 <Building2 className="h-4 w-4 text-[#24c2c2]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-[#24c2c2]">
-                  Contact a Department Directly
-                </p>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  View all 17 department emails
-                </p>
+                <p className="text-xs font-semibold text-[#24c2c2]">Contact a Department Directly</p>
+                <p className="text-xs text-gray-400 mt-0.5">View all 17 department emails</p>
               </div>
               <ArrowRight className="h-4 w-4 text-[#24c2c2] shrink-0 group-hover:translate-x-1 transition-transform duration-200" />
             </motion.button>
@@ -193,121 +171,139 @@ const ContactForm = ({ onSwitchToDepts }) => {
             className="lg:col-span-3"
           >
             <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl shadow-gray-100/60 border border-gray-100">
-              {/* Header */}
-              <div className="mb-7">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                  Send a Message
-                </h2>
-                <p className="text-gray-400 text-sm">
-                  We&apos;ll get back to you as soon as possible.
-                </p>
-                <div className="mt-4 h-0.5 w-10 rounded-full bg-gradient-to-r from-[#24c2c2] to-[#1ea8a8]" />
-              </div>
 
-              <form onSubmit={handleContact} className="space-y-5" noValidate>
-                {/* Name + Email */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <FieldWrapper label="Full Name *" error={nameError} icon={User}>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className={fieldClasses(nameError)}
-                      placeholder="Your full name"
-                    />
-                  </FieldWrapper>
-                  <FieldWrapper label="Email Address *" error={emailError} icon={Mail}>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={fieldClasses(emailError)}
-                      placeholder="your@email.com"
-                    />
-                  </FieldWrapper>
-                </div>
-
-                {/* Subject */}
-                <FieldWrapper label="Subject *" error={subjectError}>
-                  <input
-                    type="text"
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    className={fieldClasses(subjectError, false)}
-                    placeholder="What is your message about?"
-                  />
-                </FieldWrapper>
-
-                {/* Message */}
-                <FieldWrapper label="Your Message *" error={messageError} icon={MessageSquare}>
-                  <textarea
-                    value={userMessage}
-                    onChange={(e) => setUserMessage(e.target.value)}
-                    rows={5}
-                    className={fieldClasses(messageError) + " resize-none"}
-                    placeholder="Type your message here…"
-                  />
-                </FieldWrapper>
-
-                {/* Status banner */}
-                <AnimatePresence mode="wait">
-                  {isMessage && (
-                    <motion.div
-                      key={isMessage}
-                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                      transition={{ duration: 0.22 }}
-                      className={`flex items-center gap-3 p-4 rounded-xl text-sm font-medium border ${
-                        success
-                          ? "bg-green-50 text-green-700 border-green-200"
-                          : "bg-red-50 text-red-700 border-red-200"
-                      }`}
-                    >
-                      {success ? (
-                        <CheckCircle className="h-5 w-5 shrink-0 text-green-500" />
-                      ) : (
-                        <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
-                      )}
-                      <span>{isMessage}</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Submit row */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                  <div>
-                    <p className="text-xs text-gray-400">* All fields required</p>
-                    <AnimatePresence>
-                      {!isFormValid && (
-                        <motion.p
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="text-xs text-amber-500 mt-0.5 overflow-hidden"
-                        >
-                          Complete all fields to enable sending.
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  <motion.button
-                    type="submit"
-                    disabled={loading || !isFormValid}
-                    whileHover={isFormValid && !loading ? { scale: 1.04, y: -2 } : {}}
-                    whileTap={isFormValid && !loading ? { scale: 0.97 } : {}}
-                    transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                    className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-[#24c2c2] to-[#1ea8a8] text-white font-semibold rounded-xl shadow-lg shadow-[#24c2c2]/25 focus:outline-none focus:ring-2 focus:ring-[#24c2c2] focus:ring-offset-2 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none enabled:hover:shadow-xl enabled:hover:shadow-[#24c2c2]/35"
+              {/* Success state */}
+              <AnimatePresence mode="wait">
+                {isSuccess ? (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col items-center justify-center py-14 text-center"
                   >
-                    {loading ? (
-                      <><Loader2 className="h-5 w-5 animate-spin" /> Sending…</>
-                    ) : (
-                      <><Send className="h-5 w-5" /> Send Message</>
-                    )}
-                  </motion.button>
-                </div>
-              </form>
+                    <div className="w-20 h-20 rounded-full bg-green-50 border-4 border-green-200 flex items-center justify-center mb-5">
+                      <CheckCircle className="h-10 w-10 text-green-500" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Message Sent!</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed max-w-xs">{statusMessage}</p>
+                    <button
+                      type="button"
+                      onClick={reset}
+                      className="mt-7 px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      Send Another Message
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    {/* Header */}
+                    <div className="mb-7">
+                      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Send a Message</h2>
+                      <p className="text-gray-400 text-sm">We&apos;ll get back to you as soon as possible.</p>
+                      <div className="mt-4 h-0.5 w-10 rounded-full bg-gradient-to-r from-[#24c2c2] to-[#1ea8a8]" />
+                    </div>
+
+                    <form onSubmit={submit} className="space-y-5" noValidate>
+                      {/* Name + Email */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <FieldWrapper label="Full Name *" error={errors.name} icon={User}>
+                          <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setField("name", e.target.value)}
+                            className={fieldClasses(!!errors.name)}
+                            placeholder="Your full name"
+                          />
+                        </FieldWrapper>
+                        <FieldWrapper label="Email Address *" error={errors.email} icon={Mail}>
+                          <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setField("email", e.target.value)}
+                            className={fieldClasses(!!errors.email)}
+                            placeholder="your@email.com"
+                          />
+                        </FieldWrapper>
+                      </div>
+
+                      {/* Subject */}
+                      <FieldWrapper label="Subject *" error={errors.subject}>
+                        <input
+                          type="text"
+                          value={subject}
+                          onChange={(e) => setField("subject", e.target.value)}
+                          className={fieldClasses(!!errors.subject, false)}
+                          placeholder="What is your message about?"
+                        />
+                      </FieldWrapper>
+
+                      {/* Message */}
+                      <FieldWrapper label="Your Message *" error={errors.message} icon={MessageSquare}>
+                        <textarea
+                          value={message}
+                          onChange={(e) => setField("message", e.target.value)}
+                          rows={5}
+                          className={fieldClasses(!!errors.message) + " resize-none"}
+                          placeholder="Type your message here…"
+                        />
+                      </FieldWrapper>
+
+                      {/* Error banner */}
+                      <AnimatePresence mode="wait">
+                        {status === "error" && statusMessage && (
+                          <motion.div
+                            key="error-banner"
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            transition={{ duration: 0.22 }}
+                            className="flex items-center gap-3 p-4 rounded-xl text-sm font-medium border bg-red-50 text-red-700 border-red-200"
+                          >
+                            <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
+                            <span>{statusMessage}</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Submit row */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                        <div>
+                          <p className="text-xs text-gray-400">* All fields required</p>
+                          <AnimatePresence>
+                            {!isFormValid && (
+                              <motion.p
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="text-xs text-amber-500 mt-0.5 overflow-hidden"
+                              >
+                                Complete all fields to enable sending.
+                              </motion.p>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
+                        <motion.button
+                          type="submit"
+                          disabled={isLoading || !isFormValid}
+                          whileHover={isFormValid && !isLoading ? { scale: 1.04, y: -2 } : {}}
+                          whileTap={isFormValid && !isLoading ? { scale: 0.97 } : {}}
+                          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                          className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-[#24c2c2] to-[#1ea8a8] text-white font-semibold rounded-xl shadow-lg shadow-[#24c2c2]/25 focus:outline-none focus:ring-2 focus:ring-[#24c2c2] focus:ring-offset-2 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none enabled:hover:shadow-xl enabled:hover:shadow-[#24c2c2]/35"
+                        >
+                          {isLoading ? (
+                            <><Loader2 className="h-5 w-5 animate-spin" /> Sending…</>
+                          ) : (
+                            <><Send className="h-5 w-5" /> Send Message</>
+                          )}
+                        </motion.button>
+                      </div>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         </div>

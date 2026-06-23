@@ -7,17 +7,20 @@ export default function GalleryCard({ album }) {
     title,
     slug,
     description,
+    thumbnailUrl,
     imageUrl,
     image,
+    images = [],
     galleryImages = [],
     publishedAt,
+    createdAt,
     _createdAt,
   } = album;
 
   const href = `/media/photo-gallery/${slug?.current || slug}`;
-  const coverSrc = imageUrl || image?.asset?.url || galleryImages[0]?.imageUrl || "/nssec.jpeg";
-  const photoCount = galleryImages?.length || 0;
-  const date = publishedAt || _createdAt;
+  const coverSrc = thumbnailUrl || imageUrl || image?.asset?.url || images[0]?.imageUrl || galleryImages[0]?.imageUrl || "/nssec.jpeg";
+  const photoCount = images.length || galleryImages?.length || 0;
+  const date = publishedAt || createdAt || _createdAt;
   const formattedDate = date
     ? new Date(date).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })
     : "";

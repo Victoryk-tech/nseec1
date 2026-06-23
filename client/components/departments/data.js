@@ -160,7 +160,7 @@ export const DEPARTMENTS = [
     head: "Salihu Bukar Malgwi",
     headTitle: "Director, Finance & Accounts",
     email: "dfa@nssec.gov.ng",
-    photo: null,
+    photo: "/about/salihu-bukar.jpeg",
     tagline:
       "Ensuring Prudent, Transparent and Accountable Financial Management",
     description:

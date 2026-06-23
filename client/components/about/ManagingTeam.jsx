@@ -35,7 +35,7 @@ const DEPARTMENT_HEADS = [
     title: "Head, Finance & Accounts",
     department: "Directorate of Finance & Accounts (DFA)",
     email: "dfa@nssec.gov.ng",
-    photo: null,
+    photo: "/about/salihu-bukar.jpeg",
     code: "DFA",
   },
   {
@@ -78,7 +78,7 @@ const UNIT_HEADS = [
     title: "Head, Legal Unit",
     department: "Legal Unit",
     email: "legal@nssec.gov.ng",
-    photo: null,
+    photo: "/about/Maryam-Sidi-Ali.jpeg",
     code: "LEGAL",
   },
   {
@@ -106,7 +106,7 @@ const UNIT_HEADS = [
     code: "PPD",
   },
   {
-    name: "Ogundana Olabode Josiah",
+    name: "Abdulazeez Abdulkadeer Maikanti",
     title: "Head, Procurement Unit",
     department: "Procurement Unit",
     email: "procurement@nssec.gov.ng",

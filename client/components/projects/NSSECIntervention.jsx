@@ -28,6 +28,29 @@ const INTERVENTIONS = [
       { icon: LayoutGrid, label: "6NR Classroom Block", detail: "Construction of a six-classroom block to relieve overcrowding and improve the learning environment" },
       { icon: Wrench, label: "Laboratory Interior Works", detail: "Interior fit-out of the laboratory including benching, drainage, safety fixtures, and ventilation" },
     ],
+    gallery: [
+      {
+        label: "Admin Block",
+        images: [
+          { src: "/projects/koton-karfi-ADMIN-BLOCK.png", alt: "Admin block construction, Koton-Karfi" },
+        ],
+      },
+      {
+        label: "Laboratory / ICT Block",
+        images: [
+          { src: "/projects/koton-karfi-LABORATORY-ICT%20BLOCK.png", alt: "Laboratory and ICT block, Koton-Karfi" },
+          { src: "/projects/koton-karfi-INTERIOR-OF-LABORATORY.png", alt: "Interior of laboratory, Koton-Karfi" },
+        ],
+      },
+      {
+        label: "6NR Classroom Block",
+        images: [
+          { src: "/projects/koton-karfi-6-NR-CLASSROOM-BLOCK.png", alt: "6NR classroom block, Koton-Karfi" },
+          { src: "/projects/koton-karfi-SIDE-VIEW-OF-CLASSROOM-BLOCK%20png.png", alt: "Side view of classroom block, Koton-Karfi" },
+          { src: "/projects/koton-karfi-classroom-interior-view.png", alt: "Classroom interior view, Koton-Karfi" },
+        ],
+      },
+    ],
   },
   {
     school: "Our Lady of Lourdes Girls Grammar School",
@@ -43,6 +66,42 @@ const INTERVENTIONS = [
       { icon: DoorOpen, label: "School Gate", detail: "Construction of a secure, architecturally designed main entrance gate for the school compound" },
       { icon: Shield, label: "Perimeter Fence", detail: "Full perimeter fencing to secure the school grounds and protect students and facilities" },
     ],
+    gallery: [
+      {
+        label: "Classroom Renovation",
+        images: [
+          { src: "/projects/our-lady-Renovation-of-Classroom.png", alt: "Classroom renovation, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-Renovation-of-Classroom1.png", alt: "Classroom renovation progress, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-Renovation-of-Classroom2.png", alt: "Classroom renovation — interior works, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-Renovation-of-Classroom3.png", alt: "Classroom renovation completed view, Our Lady of Lourdes" },
+        ],
+      },
+      {
+        label: "4NR Laboratory Block",
+        images: [
+          { src: "/projects/our-lady-Construction-of-4NR-Laboratory-Block.png", alt: "Construction of 4NR laboratory block, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-Construction-of-4NR-Laboratory-Block2.png", alt: "4NR laboratory block — structural progress, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-Construction-of-4NR-Laboratory-Block3.png", alt: "4NR laboratory block — exterior view, Our Lady of Lourdes" },
+        ],
+      },
+      {
+        label: "ICT / E-Library Block",
+        images: [
+          { src: "/projects/our-lady-Construction-of-ICT-E-Library.png", alt: "ICT and E-Library block construction, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-Construction-of-ICT-E-Library2.png", alt: "ICT and E-Library block — roofing works, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-Construction-of-ICT-E-Library3.png", alt: "ICT and E-Library block — interior, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-Construction-of-ICT-E-Library4.png", alt: "ICT and E-Library block — completed view, Our Lady of Lourdes" },
+        ],
+      },
+      {
+        label: "School Gate & Perimeter Fence",
+        images: [
+          { src: "/projects/our-lady-School-Gate.png", alt: "School gate construction, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-School-Fence.png", alt: "Perimeter fence construction, Our Lady of Lourdes" },
+          { src: "/projects/our-lady-School-Fence1.png", alt: "Perimeter fence — completed section, Our Lady of Lourdes" },
+        ],
+      },
+    ],
   },
   {
     school: "Oyemekun Grammar School / Aquinas College",
@@ -50,12 +109,45 @@ const INTERVENTIONS = [
     zone: "South West",
     status: "Ongoing",
     summary:
-      "Infrastructure and facility upgrade at one of Ondo State's most historic senior secondary schools, improving teaching spaces, utilities, and school environment.",
+      "Infrastructure and facility upgrade at one of Ondo State's most historic senior secondary schools — delivering new classroom capacity, a multipurpose hall, E-Library renovation, and improved site access.",
     works: [
-      { icon: Wrench, label: "Classroom Rehabilitation", detail: "Renovation and modernisation of legacy classroom blocks to meet current minimum standards" },
-      { icon: Building2, label: "Administrative Works", detail: "Refurbishment of administrative offices and staff common areas" },
-      { icon: LayoutGrid, label: "Sanitation Facilities", detail: "Upgrade of ablution blocks and sanitation infrastructure for students and staff" },
-      { icon: TrendingUp, label: "General Infrastructure", detail: "Site drainage improvement, landscaping, and external works across the school compound" },
+      { icon: LayoutGrid, label: "12NR Classroom Block", detail: "Construction of a twelve-classroom block to expand learning capacity and decongest existing facilities" },
+      { icon: Building2, label: "500-Capacity Multipurpose Hall", detail: "New-build 500-seat multipurpose hall for assemblies, examinations, and community events" },
+      { icon: BookOpen, label: "E-Library Renovation", detail: "Full renovation of the E-Library including electrical rewiring, furniture, and digital infrastructure" },
+      { icon: TrendingUp, label: "Road Grading & Levelling", detail: "Grading and levelling of access roads and internal school pathways to improve site movement" },
+    ],
+    gallery: [
+      {
+        label: "12NR Classroom Block",
+        images: [
+          { src: "/projects/onyemekun-Construction-of-12-NR-Classroom-Block.png", alt: "Construction of 12NR classroom block, Oyemekun Grammar School" },
+          { src: "/projects/onyemekun-Construction-of-12-NR-Classroom-Block2.png", alt: "12NR classroom block — structural progress, Oyemekun Grammar School" },
+        ],
+      },
+      {
+        label: "500-Capacity Multipurpose Hall",
+        images: [
+          { src: "/projects/onyemekun-Construction-of-500-Capacity-Multipurpose-Hall.png", alt: "500-capacity multipurpose hall construction, Oyemekun Grammar School" },
+          { src: "/projects/onyemekun-Construction-of-500-Capacity-Multipurpose-Hall2.png", alt: "Multipurpose hall — roofing works, Oyemekun Grammar School" },
+          { src: "/projects/onyemekun-Construction-of-500-Capacity-Multipurpose-Hall3.png", alt: "Multipurpose hall — interior works, Oyemekun Grammar School" },
+          { src: "/projects/onyemekun-Construction-of-500-Capacity-Multipurpose-Hall4.png", alt: "Multipurpose hall — near completion, Oyemekun Grammar School" },
+        ],
+      },
+      {
+        label: "E-Library Renovation",
+        images: [
+          { src: "/projects/oyemekun-renovation-of-e-library.png", alt: "E-Library renovation, Oyemekun Grammar School" },
+          { src: "/projects/oyemekun-renovation-of-e-library2.png", alt: "E-Library renovation — interior progress, Oyemekun Grammar School" },
+          { src: "/projects/oyemekun-renovation-of-e-library3.png", alt: "E-Library renovation — completed view, Oyemekun Grammar School" },
+        ],
+      },
+      {
+        label: "Road Grading & Levelling",
+        images: [
+          { src: "/projects/oyemekun-Road-grading-and-leveling.png", alt: "Road grading and levelling, Oyemekun Grammar School" },
+          { src: "/projects/oyemekun-Road-grading-and-leveling1.png", alt: "Road grading — completed section, Oyemekun Grammar School" },
+        ],
+      },
     ],
   },
 ];
@@ -251,6 +343,45 @@ export default function NSSECIntervention() {
                       })}
                     </div>
                   </div>
+
+                  {/* Photo Gallery */}
+                  {project.gallery && project.gallery.length > 0 && (
+                    <div className="px-6 sm:px-8 pb-8">
+                      <div className="border-t border-gray-100 pt-6">
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-6">
+                          Project Gallery
+                        </p>
+                        <div className="space-y-8">
+                          {project.gallery.map((group, gi) => (
+                            <div key={gi}>
+                              <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#24c2c2] shrink-0" />
+                                {group.label}
+                              </p>
+                              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                                {group.images.map((img, ii) => (
+                                  <div key={ii} className="rounded-xl overflow-hidden border border-gray-100 bg-white hover:shadow-md transition-shadow">
+                                    <div className="relative aspect-[4/3] w-full">
+                                      <Image
+                                        src={img.src}
+                                        alt={img.alt}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                      />
+                                    </div>
+                                    <div className="px-3 py-2">
+                                      <p className="text-xs text-gray-500 leading-snug">{img.alt}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}

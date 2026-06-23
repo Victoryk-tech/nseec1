@@ -6,7 +6,6 @@ import StatsSection from "./StatsSection";
 import QuickAccessGrid from "./QuickAccessGrid";
 import ProgramsPreview from "./ProgramsPreview";
 import CoreFocusSection from "./CoreFocusSection";
-import News from "./News";
 import CTASection from "./CTASection";
 
 export default function HomePage() {
@@ -19,7 +18,7 @@ export default function HomePage() {
       <QuickAccessGrid />
       <ProgramsPreview />
       <CoreFocusSection />
-      <News />
+     {/* news */}
       <CTASection />
     </div>
   );

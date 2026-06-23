@@ -195,12 +195,12 @@ const UnitsOverview = () => (
             Commission. These units ensure legal compliance, financial integrity,
             transparent procurement, effective communication, digital
             infrastructure, and a culture of accountability and service
-            excellence — forming the backbone of institutional effectiveness.
+            excellence forming the backbone of institutional effectiveness.
           </p>
         </motion.div>
 
         {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6">
           {UNITS.map((unit, i) => (
             <UnitCard key={unit.slug} unit={unit} index={i} />
           ))}

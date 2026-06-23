@@ -1,27 +1,27 @@
 import PublicationDetailPage from "@/components/publications/PublicationDetailPage";
-import { sanityClient } from "@/app/lib/sanityClient";
-import { groq } from "next-sanity";
 import { publicationSchema } from "@/app/utils/structuredData";
 
 const BASE = "https://nssec.gov.ng";
-const allSlugsQuery = groq`*[_type == "publications" && defined(slug.current)]{ "slug": slug.current }`;
-const pubQuery = groq`*[_type == "publications" && slug.current == $slug][0]{
-  title, description,
-  "coverImageUrl": coalesce(cloudinaryUrl, coverImage.asset->url),
-  category, author, publishedAt, _createdAt, fileSize, pageCount
-}`;
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
 export async function generateStaticParams() {
   try {
-    const data = await sanityClient.fetch(allSlugsQuery);
-    return data.map((d) => ({ slug: d.slug }));
-  } catch { return []; }
+    const res = await fetch(`${API}/publications/slugs`, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.data?.slugs || []).map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const pub = await sanityClient.fetch(pubQuery, { slug });
+    const res = await fetch(`${API}/publications/${slug}`, { next: { revalidate: 3600 } });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const pub = data.data?.publication;
     if (!pub) throw new Error();
     const details = [pub.fileSize, pub.pageCount ? `${pub.pageCount} pages` : null].filter(Boolean).join(" • ");
     return {
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
         description: pub.description || `Download ${pub.title}`,
         url: `${BASE}/publications/${slug}`,
         type: "article",
-        publishedTime: pub.publishedAt || pub._createdAt,
+        publishedTime: pub.publishedAt || pub.createdAt,
         images: [{ url: pub.coverImageUrl || `${BASE}/nssec.jpeg`, width: 1200, height: 630 }],
       },
       twitter: {
@@ -54,20 +54,25 @@ export default async function PublicationDetailRoute({ params }) {
   const { slug } = await params;
   let jsonLd = null;
   try {
-    const pub = await sanityClient.fetch(pubQuery, { slug });
-    if (pub) {
-      jsonLd = publicationSchema({
-        title: pub.title,
-        description: pub.description,
-        coverImageUrl: pub.coverImageUrl,
-        publishedAt: pub.publishedAt || pub._createdAt,
-        slug,
-        author: pub.author,
-        fileSize: pub.fileSize,
-        pageCount: pub.pageCount,
-      });
+    const res = await fetch(`${API}/publications/${slug}`, { next: { revalidate: 3600 } });
+    if (res.ok) {
+      const data = await res.json();
+      const pub = data.data?.publication;
+      if (pub) {
+        jsonLd = publicationSchema({
+          title: pub.title,
+          description: pub.description,
+          coverImageUrl: pub.coverImageUrl,
+          publishedAt: pub.publishedAt || pub.createdAt,
+          slug,
+          author: pub.author,
+          fileSize: pub.fileSize,
+          pageCount: pub.pageCount,
+        });
+      }
     }
   } catch {}
+
   return (
     <>
       {jsonLd && (

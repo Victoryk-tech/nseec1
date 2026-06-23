@@ -1,8 +1,8 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { Images, ChevronRight, Search } from "lucide-react";
-import { useBlogContext } from "@/components/contexts/BlogContext";
+import { useGalleryStore } from "@/store/galleryStore";
 import GalleryCard from "./GalleryCard";
 
 function SkeletonCard() {
@@ -20,14 +20,11 @@ function SkeletonCard() {
 const POSTS_PER_PAGE = 12;
 
 export default function GalleryListingPage() {
-  const { blogs, loading } = useBlogContext();
+  const { albums, isLoading: loading, fetchAlbums } = useGalleryStore();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const albums = useMemo(
-    () => blogs.filter((b) => b.mainCategory === "photo-gallery"),
-    [blogs]
-  );
+  useEffect(() => { fetchAlbums(); }, []);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return albums;

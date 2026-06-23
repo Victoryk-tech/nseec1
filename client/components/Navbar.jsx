@@ -22,15 +22,12 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useBlogContext } from "./contexts/BlogContext";
 import { DEPT_NAV_ITEMS, UNIT_NAV_ITEMS } from "@/lib/departments-units-data";
 
 import log2 from "../public/nssec.jpeg";
 
 const Navbar = () => {
   const pathname = usePathname();
-  const { blogs, loading, error } = useBlogContext();
-
   const dropdownRef = useRef(null);
   const id = pathname.startsWith("/Media/")
     ? pathname.split("/Media/")[1]

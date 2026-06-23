@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Twitter, Facebook, Instagram, Linkedin, Youtube,
-  MapPin, Mail, Phone, Clock, ArrowRight, Send,
+  MapPin, Mail, Phone, Clock, Send,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useFormContext } from "./contexts/FormContext";
+import { useSubscriberStore } from "@/store/subscriberStore";
 
 const SOCIAL = [
   { icon: Twitter, href: "https://twitter.com/nssec_ng", label: "Twitter" },
@@ -64,19 +64,49 @@ function FooterLink({ href, label }) {
   );
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function Footer() {
-  const {
-    loading,
-    handleSubscribe,
-    message,
-    isSuccess,
-    email,
-    setEmail,
-    agreed,
-    setAgreed,
-    subscriberName,
-    setSubscriberName,
-  } = useFormContext();
+  const { publicSubscribe } = useSubscriberStore();
+  const [subscriberName, setSubscriberName] = useState("");
+  const [email, setEmail] = useState("");
+  const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(true);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    setMessage("");
+
+    if (!subscriberName.trim() || subscriberName.trim().length < 2) {
+      setMessage("Please enter your full name (at least 2 characters).");
+      setIsSuccess(false);
+      return;
+    }
+    if (!email.trim() || !EMAIL_RE.test(email.trim())) {
+      setMessage("Please enter a valid email address.");
+      setIsSuccess(false);
+      return;
+    }
+    if (!agreed) {
+      setMessage("Please tick the box to agree to receive updates.");
+      setIsSuccess(false);
+      return;
+    }
+
+    setLoading(true);
+    const result = await publicSubscribe({ name: subscriberName, email });
+    setLoading(false);
+    setIsSuccess(result.success);
+    setMessage(result.message);
+    if (result.success) {
+      setSubscriberName("");
+      setEmail("");
+      setAgreed(false);
+    }
+    setTimeout(() => setMessage(""), 6000);
+  };
 
   return (
     <footer className="bg-[#040e0e]">

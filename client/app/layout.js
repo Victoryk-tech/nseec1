@@ -4,9 +4,9 @@ import Script from 'next/script';
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import { BlogProvider } from "../components/contexts/BlogContext";
-import { FormProvider } from "../components/contexts/FormContext";
 import { organizationSchema, websiteSchema } from './utils/structuredData';
 import CanonicalURL from '../components/CanonicalURL';
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,6 +25,9 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+//  meristem (gnzbw2g4)
+ // coderina (jcpla9kp)  for sanity
+ // esteam (t8pcupgd)
 export const metadata = {
   title: {
     default: "NSSEC - NATIONAL SENIOR SECONDARY EDUCATION COMMISSION (NSSEC)",
@@ -107,10 +110,17 @@ export default function RootLayout({ children }) {
         />
         <main className="flex-1">
           <BlogProvider>
-            <FormProvider>
-              <Navbar />
-              {children}
-            </FormProvider>
+            <Navbar />
+            {children}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: { borderRadius: "10px", fontSize: "14px" },
+                success: { style: { background: "#f0fdfc", border: "1px solid #24c2c2", color: "#082c2c" } },
+                error: { style: { background: "#fff1f2", border: "1px solid #fca5a5", color: "#7f1d1d" } },
+              }}
+            />
           </BlogProvider>
         </main>
       </body>
