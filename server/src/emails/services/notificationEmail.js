@@ -1,5 +1,5 @@
 import { emailLayout } from "../templates/layout.js";
-import { sendEmail } from "../../config/gmail.js";
+import { sendEmail } from "../../config/resend.js";
 
 export const sendAdminNotification = async ({ to, subject, title, message, details = [], actionUrl, actionLabel = "View Details" }) => {
   const detailRows = details.map(
