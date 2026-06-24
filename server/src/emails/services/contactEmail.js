@@ -1,5 +1,5 @@
 import { emailLayout } from "../templates/layout.js";
-import { sendEmail } from "../../config/resend.js";
+import { sendEmail } from "../../config/gmail.js";
 
 export const sendContactConfirmationEmail = async ({ name, email, subject }) => {
   const html = emailLayout({

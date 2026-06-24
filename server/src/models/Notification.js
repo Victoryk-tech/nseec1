@@ -22,6 +22,7 @@ const notificationSchema = new mongoose.Schema(
         "USER_DEACTIVATED",
         "CONTACT_RECEIVED",
         "SUBSCRIBER_JOINED",
+        "MANDE_SUBMITTED",
         "MEDIA_UPLOADED",
         "SYSTEM",
       ],

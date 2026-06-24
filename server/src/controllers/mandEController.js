@@ -1,6 +1,7 @@
 import MandESubmission from "../models/MandESubmission.js";
 import { uploadToCloudinary } from "../config/cloudinary.js";
 import { sendMandEConfirmationEmail, sendMandEAdminNotification } from "../emails/services/mandEEmail.js";
+import { notifyRoles } from "../utils/notificationHelper.js";
 import { success, created, error, badRequest, notFound } from "../utils/response.js";
 import logger from "../utils/logger.js";
 
@@ -40,6 +41,15 @@ export const submitWebForm = async (req, res) => {
       sendMandEConfirmationEmail(emailData).catch((e) => logger.error("M&E confirmation email failed", e)),
       sendMandEAdminNotification(emailData).catch((e) => logger.error("M&E admin notification failed", e)),
     ]);
+
+    notifyRoles(["superAdmin", "admin"], {
+      type: "MANDE_SUBMITTED",
+      title: "New M&E Submission",
+      message: `${submission.schoolName} (${submission.state || "N/A"}) submitted a web M&E form`,
+      link: "/dashboard/mande",
+      resource: "mande",
+      resourceId: String(submission._id),
+    }).catch(() => {});
 
     return created(res, "M&E form submitted successfully", {
       submissionId: submission._id,
@@ -107,6 +117,15 @@ export const submitPdf = async (req, res) => {
       sendMandEConfirmationEmail(emailData).catch((e) => logger.error("M&E PDF confirmation email failed", e)),
       sendMandEAdminNotification(emailData).catch((e) => logger.error("M&E PDF admin notification failed", e)),
     ]);
+
+    notifyRoles(["superAdmin", "admin"], {
+      type: "MANDE_SUBMITTED",
+      title: "New M&E PDF Submission",
+      message: `${submission.schoolName} (${submission.state || "N/A"}) uploaded a PDF M&E form`,
+      link: "/dashboard/mande",
+      resource: "mande",
+      resourceId: String(submission._id),
+    }).catch(() => {});
 
     return created(res, "M&E PDF submitted successfully", {
       submissionId: submission._id,

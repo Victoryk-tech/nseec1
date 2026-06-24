@@ -3,6 +3,7 @@ import { success, created, error, notFound, badRequest } from "../utils/response
 import { paginate, paginatedResponse } from "../utils/pagination.js";
 import { sendContactConfirmationEmail, sendContactReplyEmail } from "../emails/services/contactEmail.js";
 import { sendNewContactNotification } from "../emails/services/notificationEmail.js";
+import { notifyRoles } from "../utils/notificationHelper.js";
 import logger from "../utils/logger.js";
 
 export const submitContact = async (req, res) => {
@@ -29,6 +30,17 @@ export const submitContact = async (req, res) => {
         logger.error("Contact admin notification failed:", err.message)
       );
     }
+
+    // Dashboard notification for all admins
+    notifyRoles(["superAdmin", "admin"], {
+      type: "CONTACT_RECEIVED",
+      title: "New Contact Message",
+      message: `${name} sent a message — "${subject}"`,
+      link: "/dashboard/contacts",
+      actorName: name,
+      resource: "contact",
+      resourceId: String(contact._id),
+    }).catch(() => {});
 
     logger.info(`[CONTACT] New submission from ${email} — subject: "${subject}"`);
     return created(

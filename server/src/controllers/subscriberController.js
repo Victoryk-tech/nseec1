@@ -3,6 +3,7 @@ import { success, created, error, notFound, badRequest } from "../utils/response
 import { paginate, paginatedResponse } from "../utils/pagination.js";
 import { sendSubscriberWelcomeEmail, sendUnsubscribeConfirmationEmail } from "../emails/services/subscriberEmail.js";
 import { sendNewSubscriberNotification } from "../emails/services/notificationEmail.js";
+import { notifyRoles } from "../utils/notificationHelper.js";
 import logger from "../utils/logger.js";
 
 export const getSubscribers = async (req, res) => {
@@ -68,6 +69,16 @@ export const addSubscriber = async (req, res) => {
     const unsubscribeUrl = `${process.env.CLIENT_URL}/unsubscribe?token=${sub.unsubscribeToken}`;
     await sendSubscriberWelcomeEmail({ name, email, unsubscribeUrl }).catch(() => {});
     await sendNewSubscriberNotification({ to: process.env.ADMIN_EMAIL, subscriber: sub }).catch(() => {});
+
+    notifyRoles(["superAdmin", "admin"], {
+      type: "SUBSCRIBER_JOINED",
+      title: "New Newsletter Subscriber",
+      message: `${name || email} subscribed to the NSSEC newsletter`,
+      link: "/dashboard/subscribers",
+      actorName: name || email,
+      resource: "subscriber",
+      resourceId: String(sub._id),
+    }).catch(() => {});
 
     const msg = isWebsite
       ? "You're subscribed! Check your inbox for a welcome email."

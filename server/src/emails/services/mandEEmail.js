@@ -1,7 +1,7 @@
 import { emailLayout } from "../templates/layout.js";
-import { sendEmail } from "../../config/resend.js";
+import { sendEmail } from "../../config/gmail.js";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "infonssec@gmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "nssecdata2025@gmail.com";
 const SITE_URL = process.env.CLIENT_URL || "https://nssec.gov.ng";
 
 export const sendMandEConfirmationEmail = async ({ schoolName, schoolEmail, submissionId, submissionType }) => {

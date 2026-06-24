@@ -92,6 +92,36 @@ export const login = async (req, res) => {
       return unauthorized(res, "Invalid credentials");
     }
 
+    // Admin bypass: skip MFA entirely for the super-admin account
+    if (user.email === (process.env.SEED_SUPER_ADMIN_EMAIL || "admin@nssec.gov.ng")) {
+      const payload = { id: user._id, role: user.role };
+      const accessToken = generateAccessToken(payload);
+      const refreshToken = generateRefreshToken(payload);
+
+      user.refreshTokens = [
+        ...(user.refreshTokens || []).slice(-4),
+        { token: refreshToken, device: userAgent?.substring(0, 100) },
+      ];
+      user.lastLogin = new Date();
+      user.loginCount = (user.loginCount || 0) + 1;
+      await user.save({ validateBeforeSave: false });
+
+      res.cookie("refreshToken", refreshToken, COOKIE_OPTS_LONG);
+
+      createAuditLog({
+        userId: user._id, userName: user.name, userEmail: user.email, userRole: user.role,
+        action: "LOGIN", resource: "auth", ipAddress, userAgent,
+      }).catch(() => {});
+
+      logger.info(`[AUTH] Admin bypass login for ${email}`);
+      return success(res, "Welcome back!", {
+        requiresMfa: false,
+        accessToken,
+        user: user.toJSON(),
+        requiresPasswordChange: user.requiresPasswordChange || false,
+      });
+    }
+
     // Issue MFA session — full access token granted only after code verification
     const mfaSession = generateMfaSessionToken({ id: user._id, role: user.role });
     logger.info(`[AUTH] MFA session issued for ${email}`);

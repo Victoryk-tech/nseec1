@@ -1,5 +1,5 @@
 import { emailLayout } from "../templates/layout.js";
-import { sendEmail } from "../../config/resend.js";
+import { sendEmail } from "../../config/gmail.js";
 import Subscriber from "../../models/Subscriber.js";
 import Contact from "../../models/Contact.js";
 import logger from "../../utils/logger.js";
