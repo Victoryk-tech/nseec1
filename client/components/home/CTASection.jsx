@@ -39,7 +39,7 @@ export default function CTASection() {
               </h2>
               <p className="text-white/65 text-lg leading-relaxed max-w-lg mb-8">
                 Join NSSEC in its mission to elevate Nigeria&apos;s senior secondary education system.
-                Whether you&apos;re an educator, policymaker, development partner, or stakeholder —
+                Whether you&apos;re an educator, policymaker, development partner, or stakeholder,
                 there&apos;s a role for you in our vision.
               </p>
               <div className="flex flex-wrap gap-4">

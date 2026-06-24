@@ -17,6 +17,7 @@ const TYPE_ICONS = {
   USER_DEACTIVATED: "🚫",
   CONTACT_RECEIVED: "📬",
   SUBSCRIBER_JOINED: "📮",
+  MANDE_SUBMITTED: "📋",
   MEDIA_UPLOADED: "🖼️",
   SYSTEM: "⚙️",
 };
@@ -31,6 +32,7 @@ const TYPE_COLORS = {
   USER_DEACTIVATED: "bg-orange-50 border-orange-200",
   CONTACT_RECEIVED: "bg-purple-50 border-purple-200",
   SUBSCRIBER_JOINED: "bg-teal-50 border-teal-200",
+  MANDE_SUBMITTED: "bg-indigo-50 border-indigo-200",
   SYSTEM: "bg-gray-50 border-gray-200",
 };
 

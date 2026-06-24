@@ -1,11 +1,18 @@
 "use client";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import { useUIStore } from "@/store/uiStore";
 import DashboardSidebar from "./DashboardSidebar";
 import ConfirmDialog from "../ui/ConfirmDialog";
 
 export default function DashboardLayout({ children }) {
   const { sidebarCollapsed } = useUIStore();
+
+  useEffect(() => {
+    AOS.init({ duration: 700, once: true, easing: "ease-out-cubic", offset: 20 });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">

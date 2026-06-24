@@ -162,6 +162,27 @@ export const useAuthStore = create(
         }
       },
 
+      adminBypassVerification: async () => {
+        try {
+          const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+          });
+          if (!refreshRes.ok) return { success: false };
+          const refreshData = await refreshRes.json();
+          const { accessToken } = refreshData.data;
+          setAccessToken(accessToken);
+          set({ accessToken, mfaSession: null });
+          const { data } = await dashApi.get("/auth/me");
+          set({ user: data.data.user, isInitialized: true });
+          toast.success(`Welcome back, ${data.data.user.name?.split(" ")[0]}!`);
+          return { success: true };
+        } catch {
+          return { success: false };
+        }
+      },
+
       logout: async () => {
         try {
           await dashApi.post("/auth/logout");

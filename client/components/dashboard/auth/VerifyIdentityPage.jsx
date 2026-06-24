@@ -21,7 +21,7 @@ function maskEmail(email = "") {
 export default function VerifyIdentityPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, mfaSession, sendMfaCode, verifyMfaCode, tryDeviceAutoLogin, isLoading } =
+  const { user, mfaSession, sendMfaCode, verifyMfaCode, tryDeviceAutoLogin, adminBypassVerification, isLoading } =
     useAuthStore();
 
   const session = mfaSession || searchParams.get("session") || "";
@@ -66,6 +66,26 @@ export default function VerifyIdentityPage() {
       }
     });
   }, [session, user?._id]);
+
+  // Admin bypass: admin@nssec.gov.ng skips verification entirely
+  useEffect(() => {
+    if (!session || !user?.email || verified || otpSuccess || autoChecking) return;
+    if (user.email !== "admin@nssec.gov.ng") return;
+
+    setAutoChecking(true);
+    adminBypassVerification().then((result) => {
+      if (result.success) {
+        setOtpSuccess(true);
+        setTimeout(() => {
+          setVerified(true);
+          setTimeout(() => router.push("/dashboard"), 1000);
+        }, 600);
+      } else {
+        // Fallback: first-ever login or expired session — show verification page
+        setAutoChecking(false);
+      }
+    });
+  }, [session, user?.email]);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;

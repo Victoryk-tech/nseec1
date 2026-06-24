@@ -1,11 +1,12 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, Mail, MessageSquare, ImageIcon,
-  ScrollText, Settings, ChevronRight, LogOut, Shield, Bell, BookOpen, Camera,
-  Newspaper, FileText,
+  ScrollText, Settings, ChevronRight, LogOut, Bell, BookOpen, Camera,
+  Newspaper, FileText, ClipboardList,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store/uiStore";
@@ -67,6 +68,12 @@ const NAV = [
     roles: ["superAdmin", "admin"],
   },
   {
+    href: "/dashboard/mande",
+    icon: ClipboardList,
+    label: "M&E Submissions",
+    roles: ["superAdmin", "admin", "editor", "viewer"],
+  },
+  {
     href: "/dashboard/audit",
     icon: ScrollText,
     label: "Audit Log",
@@ -90,7 +97,7 @@ const NAV = [
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
-  const { sidebarOpen, sidebarCollapsed, toggleSidebar } = useUIStore();
+  const { sidebarOpen, sidebarCollapsed, toggleSidebar, openConfirm } = useUIStore();
   const { unreadCount } = useNotificationStore();
 
   const allowed = NAV.filter((n) => n.roles.includes(user?.role));
@@ -123,8 +130,8 @@ export default function DashboardSidebar() {
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 min-h-[64px]">
-          <div className="w-8 h-8 bg-[#24c2c2] rounded-lg flex items-center justify-center flex-shrink-0">
-            <Shield size={16} className="text-white" />
+          <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 bg-white/10">
+            <Image src="/nssec.jpeg" alt="NSSEC" width={32} height={32} className="w-full h-full object-contain" />
           </div>
           <AnimatePresence>
             {!sidebarCollapsed && (
@@ -214,8 +221,11 @@ export default function DashboardSidebar() {
         <div className="border-t border-white/10 px-3 py-4">
           {!sidebarCollapsed && (
             <div className="flex items-center gap-2 px-3 py-2 mb-2">
-              <div className="w-8 h-8 rounded-full bg-[#24c2c2]/20 flex items-center justify-center text-[#24c2c2] font-bold text-sm flex-shrink-0">
-                {user?.name?.[0]?.toUpperCase()}
+              <div className="w-8 h-8 rounded-full bg-[#24c2c2]/20 flex items-center justify-center text-[#24c2c2] font-bold text-sm flex-shrink-0 overflow-hidden">
+                {user?.avatar
+                  ? <Image src={user.avatar} alt={user.name} width={32} height={32} className="w-full h-full object-cover" />
+                  : user?.name?.[0]?.toUpperCase()
+                }
               </div>
               <div className="min-w-0">
                 <p className="text-white text-xs font-medium truncate">{user?.name}</p>
@@ -224,7 +234,15 @@ export default function DashboardSidebar() {
             </div>
           )}
           <button
-            onClick={logout}
+            onClick={() =>
+              openConfirm({
+                title: "Sign Out",
+                message: "Are you sure you want to sign out of your account?",
+                danger: true,
+                confirmLabel: "Sign Out",
+                onConfirm: logout,
+              })
+            }
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all w-full"
           >
             <LogOut size={16} className="flex-shrink-0" />

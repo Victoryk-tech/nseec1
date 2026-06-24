@@ -75,6 +75,12 @@ export default function Footer() {
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(true);
 
+  const canSubscribe =
+    subscriberName.trim().length >= 2 &&
+    EMAIL_RE.test(email.trim()) &&
+    agreed &&
+    !loading;
+
   const handleSubscribe = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -162,10 +168,10 @@ export default function Footer() {
                 </label>
                 <button
                   type="submit"
-                  disabled={loading}
-                  className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm whitespace-nowrap transition-all duration-300 ${
-                    loading
-                      ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                  disabled={!canSubscribe}
+                  className={`inline-flex items-center justify-center text-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm whitespace-nowrap transition-all duration-300 ${
+                    !canSubscribe
+                      ? "bg-white/10 text-white/30 cursor-not-allowed"
                       : "bg-[#24c2c2] text-white hover:bg-[#1da8a8] shadow-lg shadow-[#24c2c2]/20"
                   }`}
                 >
