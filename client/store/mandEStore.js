@@ -11,6 +11,9 @@ export const useMandEStore = create((set, get) => ({
   setFilters: (f) =>
     set({ filters: { ...get().filters, ...f, page: 1 } }),
 
+  setPage: (page) =>
+    set({ filters: { ...get().filters, page } }),
+
   fetchSubmissions: async (params) => {
     set({ isLoading: true });
     try {
@@ -20,7 +23,7 @@ export const useMandEStore = create((set, get) => ({
       ).toString();
       const { data } = await dashApi.get(`/mande?${query}`);
       set({
-        submissions: data.data.data,
+        submissions: data.data.submissions ?? [],
         pagination: data.data.pagination,
         isLoading: false,
       });

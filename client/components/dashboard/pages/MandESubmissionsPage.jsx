@@ -248,7 +248,7 @@ const NIGERIAN_STATES = [
 ];
 
 export default function MandESubmissionsPage() {
-  const { submissions, pagination, isLoading, filters, fetchSubmissions, setFilters, updateStatus } = useMandEStore();
+  const { submissions, pagination, isLoading, filters, fetchSubmissions, setFilters, setPage, updateStatus } = useMandEStore();
   const { openConfirm } = useUIStore();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
@@ -465,7 +465,7 @@ export default function MandESubmissionsPage() {
               <div className="flex items-center gap-2">
                 <button
                   disabled={currentPage <= 1}
-                  onClick={() => setFilters({ page: currentPage - 1 })}
+                  onClick={() => setPage(currentPage - 1)}
                   className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronLeft size={14} />
@@ -473,7 +473,7 @@ export default function MandESubmissionsPage() {
                 <span className="text-xs font-medium text-gray-700 tabular-nums">{currentPage} / {totalPages}</span>
                 <button
                   disabled={currentPage >= totalPages}
-                  onClick={() => setFilters({ page: currentPage + 1 })}
+                  onClick={() => setPage(currentPage + 1)}
                   className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronRight size={14} />
